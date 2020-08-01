@@ -1,0 +1,217 @@
+.container{
+    background-color: #FFFFFF;
+}
+
+.content{
+    padding: 10px 30px 30px 30px;
+}
+
+.title{
+    display: block;
+}
+
+.title-text{
+    margin-top: 4px;
+    font-size: 14px;
+}
+
+label{
+    font-size: 14px !important;
+}
+
+.slds-box{
+    border-bottom: 0px;
+}
+
+div.slds-box:last-of-type{
+    border-bottom: 0.990px !important;
+}
+
+.email-icon{
+    margin-right: 8px;
+}
+
+.border-workaround{
+    width: 100%;
+    border-top: 0.990px solid #DEDCDB;;
+}
+
+.slds-truncate{
+    margin-top: 5px !important;
+}
+
+.hover-blue:hover{
+    background-color: #e7f3fd;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.no-border{
+    border: 0px solid white;
+}
+
+.table-title{
+    font-size: 18px;
+    float: left;
+    text-align: left;
+    width: 87%;
+}
+
+.panel-header{
+    margin-left: 5px;
+}
+
+.more-margin{
+    margin-left: 25px;
+}
+
+.email-content{
+    text-align: justify;
+}
+
+.icon{
+    background: #FFFFFF !important;
+}
+
+.whiteColor{
+    fill : #FFFFFF;
+}
+.iconContainer{
+    width : 25px;
+    height: 25px;
+    display: inline-block;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.input-date-from{
+    margin-left: 8px;
+}
+
+.float-left{
+    float: left;
+    width: 49% !important;
+    margin-left: 0px !important;
+}
+
+
+.margin-float{
+    margin-right: 1.8%;
+}
+
+.clear{
+    clear: both !important;
+}
+
+.margin-top{
+    margin-top: 8px;
+}
+
+.margin-bottom{
+    margin-bottom: 8px;
+}
+
+.entry-combobox{
+    width: 80px !important;
+    margin: 0px !important;
+    padding: 0px !important;
+    display: inline-block !important;
+}
+
+.table-headers{
+    margin-top: 20px !important;
+}
+
+.pagination-button{
+    float: left !important;
+    margin-right: 4px !important;
+    margin-bottom: 4px !important;
+}
+
+.pagination-container{
+    margin-top: 20px !important;
+    float: left;
+}
+
+
+.entries-amount{
+    width: 14.5%;
+    float: right;
+}
+
+.margin-pagination{
+    margin-bottom: 20px;
+}
+
+/*Start of styles for multi-select picklists*/
+.slds-picklist, .slds-picklist__label, .slds-dropdown {
+    width:100%;
+}
+
+.multi-select-label{
+    margin-top: 11px;    
+    margin-bottom: 4px;
+    font-size: 12px !important;
+    color: #50504E !important;
+}
+
+.multi-select-label2{
+    margin-top: 12px;    
+    margin-bottom: 2px;
+    font-size: 12px !important;
+    color: #50504E !important;
+}
+
+.multi-select-label3{
+    margin-top: 7px;    
+    margin-bottom: 4px;
+    font-size: 12px !important;
+    color: #50504E !important;
+}
+
+.multi-select-label4{
+    margin-top: 3px;    
+    margin-bottom: 2px;
+    font-size: 12px !important;
+    color: #50504E !important;
+}
+
+.label-color{
+    color: #50504E !important;
+}
+
+.label-color:hover{
+    color: #50504E !important;
+}
+
+.multi-select-picklist-button{
+    height: 32px !important;
+}
+
+.multi-picklist-span{
+    margin-bottom: 3px;
+    text-align: left !important;
+}
+
+.slds-dropdown{
+    margin: 0px !important;
+}
+
+.picklist-selected-option{
+    background-color: #FAFFBB !important;
+}
+/*End of styles for multi-select picklists*/
+
+.float-left-only{
+    float: left;
+}
+
+.float-right-only{
+    float: right;
+}
+
+.disabled-button{
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: #F8F8F8;
+}
