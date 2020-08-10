@@ -73,10 +73,10 @@ div.slds-box:last-of-type{
     background: #FFFFFF !important;
 }
 
-.whiteColor{
+.fill-white-color{
     fill : #FFFFFF;
 }
-.iconContainer{
+.icon-container{
     width : 25px;
     height: 25px;
     display: inline-block;
@@ -124,7 +124,6 @@ div.slds-box:last-of-type{
 
 .pagination-button{
     float: left !important;
-    margin-right: 4px !important;
     margin-bottom: 4px !important;
 }
 
@@ -132,7 +131,6 @@ div.slds-box:last-of-type{
     margin-top: 20px !important;
     float: left;
 }
-
 
 .entries-amount{
     width: 14.5%;
@@ -148,28 +146,22 @@ div.slds-box:last-of-type{
     width:100%;
 }
 
-.multi-select-label{
-    margin-top: 11px;    
-    margin-bottom: 4px;
-    font-size: 12px !important;
-    color: #50504E !important;
-}
 
-.multi-select-label2{
+.multi-select-label-12px-top-margin{
     margin-top: 12px;    
     margin-bottom: 2px;
     font-size: 12px !important;
     color: #50504E !important;
 }
 
-.multi-select-label3{
+.multi-select-label-7px-top-margin{
     margin-top: 7px;    
     margin-bottom: 4px;
     font-size: 12px !important;
     color: #50504E !important;
 }
 
-.multi-select-label4{
+.multi-select-label-3px-top-margin{
     margin-top: 3px;    
     margin-bottom: 2px;
     font-size: 12px !important;
@@ -188,7 +180,7 @@ div.slds-box:last-of-type{
     height: 32px !important;
 }
 
-.multi-picklist-span{
+.multi-select-picklist-span{
     margin-bottom: 3px;
     text-align: left !important;
 }
@@ -214,4 +206,9 @@ div.slds-box:last-of-type{
     cursor: not-allowed;
     pointer-events: none;
     background-color: #F8F8F8;
+}
+
+.total-emails-text{
+    font-size: 11px;
+    margin-left: 8px;
 }

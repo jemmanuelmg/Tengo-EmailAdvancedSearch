@@ -2,7 +2,7 @@
   @description       : 
   @author            : emmanuel.martinez@tengo.co
   @group             : 
-  @last modified on  : 08-01-2020
+  @last modified on  : 08-04-2020
   @last modified by  : emmanuel.martinez@tengo.co
   Modifications Log 
   Ver   Date         Author                       Modification
@@ -32,21 +32,21 @@
                 </div>
                 <div class="slds-col slds-size_6-of-12">
 
-                    <div class="multi-select-label3"></div>
+                    <div class="multi-select-label-7px-top-margin"></div>
                     <lightning-input type="text" class="input-contains float-left margin-float" label="Keywords:" placeholder="Keywords inside the email's body or subject"></lightning-input>
                     <!--Start engagement multi select picklist-->
                     <div class="slds-form-element float-left">
-                        <div class={mainDivClassAttr3}>
-                            <div class="multi-select-label4">Select Engagements</div>
+                        <div class={mainDivClassAttrEngagements}>
+                            <div class="multi-select-label-3px-top-margin">Select Engagements</div>
                             <button class="slds-button slds-button--neutral slds-picklist__label multi-select-picklist-button" aria-haspopup="true" 
-                                    onclick={handleMouseEnter3} 
-                                    onmouseleave={handleMouseLeave3}> 
-                                <span class="slds-truncate slds-text-align_left label-color multi-picklist-span">Selected: {selectedAmountOfEngagements}</span>
+                                    onclick={handleMouseEnterEngagements} 
+                                    onmouseleave={handleMouseLeaveEngagements}> 
+                                <span class="slds-truncate slds-text-align_left label-color multi-select-picklist-span">Selected: {selectedAmountOfEngagements}</span>
                                 <lightning-icon icon-name="utility:down" size="medium" class="slds-icon slds-text-align_right" ></lightning-icon>
                             </button>
                             <div class="slds-dropdown slds-dropdown--left slds-dropdown_length-7 slds-dropdown_large" 
-                                onmouseenter={handleMouseEnter3}
-                                onmouseleave={handleMouseLeave3}>
+                                onmouseenter={handleMouseEnterEngagements}
+                                onmouseleave={handleMouseLeaveEngagements}>
                                 <ul class="slds-dropdown__list" role="menu" aria-label="Show More">
                                     <template for:each={engagementOptions} for:item="engagement">
                                         <div class="slds-form-element slds-p-around_xx-small" key={engagement.value}>
@@ -54,7 +54,7 @@
                                                              label={engagement.label}                                             
                                                              data-id={engagement.value}
                                                              checked={engagement.isSelected}                                              
-                                                             onchange={handleSelectionEgagement}
+                                                             onchange={handleSelectionEgagements}
                                                              class={engagement.cssClass}>
                                             </lightning-input>
                                         </div>
@@ -69,17 +69,17 @@
 
                     <!--Start category multi select picklist-->
                     <div class="slds-form-element float-left margin-float">
-                        <div class={mainDivClassAttr2}>
-                            <div class="multi-select-label2">Select Categories</div>
+                        <div class={mainDivClassAttrCategories}>
+                            <div class="multi-select-label-12px-top-margin">Select Categories</div>
                             <button class="slds-button slds-button--neutral slds-picklist__label multi-select-picklist-button" aria-haspopup="true" 
-                                    onclick={handleMouseEnter2} 
-                                    onmouseleave={handleMouseLeave2}>
-                                <span class="slds-truncate slds-text-align_left label-color multi-picklist-span">Selected: {selectedAmountOfCategories}</span>
+                                    onclick={handleMouseEnterCategories} 
+                                    onmouseleave={handleMouseLeaveCategories}>
+                                <span class="slds-truncate slds-text-align_left label-color multi-select-picklist-span">Selected: {selectedAmountOfCategories}</span>
                                 <lightning-icon icon-name="utility:down" size="medium" class="slds-icon slds-text-align_right" ></lightning-icon>
                             </button>
                             <div class="slds-dropdown slds-dropdown--left slds-dropdown_length-7 slds-dropdown_large" 
-                                onmouseenter={handleMouseEnter2}
-                                onmouseleave={handleMouseLeave2}>
+                                onmouseenter={handleMouseEnterCategories}
+                                onmouseleave={handleMouseLeaveCategories}>
                                 <ul class="slds-dropdown__list" role="menu" aria-label="Show More">
                                     <template for:each={categoryOptions} for:item="category">
                                         <div class="slds-form-element slds-p-around_xx-small" key={category.value}>
@@ -87,7 +87,7 @@
                                                              label={category.label}                                             
                                                              data-id={category.value}
                                                              checked={category.isSelected}                                              
-                                                             onchange={handleSelectionCategory}
+                                                             onchange={handleSelectionCategories}
                                                              class="slds-truncate">
                                             </lightning-input>
                                         </div>
@@ -100,17 +100,17 @@
 
                     <!--Start business unit multi select picklist-->
                     <div class="slds-form-element float-left">
-                        <div class={mainDivClassAttr}>
-                            <div class="multi-select-label2">Filter by Business Unit</div>
+                        <div class={mainDivClassAttrBusinessUnits}>
+                            <div class="multi-select-label-12px-top-margin">Filter by Business Unit</div>
                             <button class="slds-button slds-button--neutral slds-picklist__label multi-select-picklist-button bu-filter" aria-haspopup="true" 
-                                    onclick={handleMouseEnter} 
-                                    onmouseleave={handleMouseLeave}>
-                                <span class="slds-truncate slds-text-align_left label-color multi-picklist-span">Selected: {selectedAmountOfBus}</span>
+                                    onclick={handleMouseEnterBusinessUnits} 
+                                    onmouseleave={handleMouseLeaveBusinessUnits}>
+                                <span class="slds-truncate slds-text-align_left label-color multi-select-picklist-span">Selected: {selectedAmountOfBus}</span>
                                 <lightning-icon icon-name="utility:down" size="medium" class="slds-icon slds-text-align_right" ></lightning-icon>
                             </button>
                             <div class="slds-dropdown slds-dropdown--left slds-dropdown_length-7 slds-dropdown_large" 
-                                onmouseenter={handleMouseEnter}
-                                onmouseleave={handleMouseLeave}>
+                                onmouseenter={handleMouseEnterBusinessUnits}
+                                onmouseleave={handleMouseLeaveBusinessUnits}>
                                 <ul class="slds-dropdown__list" role="menu" aria-label="Show More">
                                     <template for:each={businessUnitsOptions} for:item="businessUnit">
                                         <div class="slds-form-element slds-p-around_xx-small" key={businessUnit.value}>
@@ -118,7 +118,7 @@
                                                              label={businessUnit.label}                                             
                                                              data-id={businessUnit.value}
                                                              checked={businessUnit.isSelected}                                              
-                                                             onchange={handleSelection}
+                                                             onchange={handleSelectionBusinessUnits}
                                                              class="slds-truncate">
                                             </lightning-input>
                                         </div>
@@ -146,15 +146,15 @@
             <br>
 
             <template if:true={thereAreEmails}>
-                <div>Total emails: {maxRecordsToShow}</div>               
+                <div class="total-emails-text">Please Note: This search function returns a maximum of 2000 matching records</div>               
                
                 <div>
                     <div class="pagination-container">
-                        <lightning-button label="Previous" data-number="-1" title="Non-primary action" onclick={handlePageChange} class="slds-m-left_x-small pagination-button"></lightning-button>
+                        <lightning-button data-number="-1" icon-name="utility:chevronleft" onclick={handlePageChange} class="slds-m-left_x-small pagination-button"></lightning-button>
                         <template for:each={listOfPageNumbers} for:item='number'>
                             <lightning-button key={number} data-number={number}  onclick={handlePageChange} label={number} title="Non-primary action" class="slds-m-left_x-small pagination-button" ></lightning-button>
                         </template>
-                        <lightning-button label="Next" data-number="-2" title="Non-primary action" onclick={handlePageChange} class="slds-m-left_x-small pagination-button"></lightning-button>
+                        <lightning-button data-number="-2" icon-name="utility:chevronright" onclick={handlePageChange} class="slds-m-left_x-small pagination-button"></lightning-button>
                     </div>
 
                     <div class="entries-amount">
@@ -178,11 +178,11 @@
 
                 <div>
                     <div class="pagination-container">
-                        <lightning-button label="Previous" data-number="-1" title="Non-primary action" onclick={handlePageChange} class="slds-m-left_x-small pagination-button"></lightning-button>
+                        <lightning-button data-number="-1" icon-name="utility:chevronleft" onclick={handlePageChange} class="slds-m-left_x-small pagination-button"></lightning-button>
                         <template for:each={listOfPageNumbers} for:item='number'>
                             <lightning-button key={number} data-number={number}  onclick={handlePageChange} label={number} title="Non-primary action" class="slds-m-left_x-small pagination-button" ></lightning-button>
                         </template>
-                        <lightning-button label="Next" data-number="-2" title="Non-primary action" onclick={handlePageChange} class="slds-m-left_x-small pagination-button"></lightning-button>
+                        <lightning-button data-number="-2" icon-name="utility:chevronright" onclick={handlePageChange} class="slds-m-left_x-small pagination-button"></lightning-button>
                     </div>
                 </div>
                 <div class="clear margin-pagination"></div>
@@ -206,7 +206,7 @@
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
             <div class="slds-modal__container">
             <header class="slds-modal__header">
-                <div class="iconContainer whiteColor slds-modal__close" onclick={closeModal}>
+                <div class="icon-container fill-white-color slds-modal__close" onclick={closeModal}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" id="close">
                         <path d="M31 25.4l13-13.1c.6-.6.6-1.5 0-2.1l-2-2.1c-.6-.6-1.5-.6-2.1 0L26.8 21.2c-.4.4-1 .4-1.4 0L12.3 8c-.6-.6-1.5-.6-2.1 0l-2.1 2.1c-.6.6-.6 1.5 0 2.1l13.1 13.1c.4.4.4 1 0 1.4L8 39.9c-.6.6-.6 1.5 0 2.1l2.1 2.1c.6.6 1.5.6 2.1 0L25.3 31c.4-.4 1-.4 1.4 0l13.1 13.1c.6.6 1.5.6 2.1 0L44 42c.6-.6.6-1.5 0-2.1L31 26.8c-.4-.4-.4-1 0-1.4z"></path>
                     </svg>

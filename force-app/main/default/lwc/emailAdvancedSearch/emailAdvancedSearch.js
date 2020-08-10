@@ -3,7 +3,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import searchEmails from '@salesforce/apex/EmailAdvancedSearchController.searchEmails';
 import getBusinessUnitsOfEngagement from '@salesforce/apex/EmailAdvancedSearchController.getBusinessUnitsOfEngagement';
 import countTotalEmails from '@salesforce/apex/EmailAdvancedSearchController.countTotalEmails';
-import getSiblingEngagements from '@salesforce/apex/EmailAdvancedSearchController.getSiblingEngagements';
+import getRelatedEngagements from '@salesforce/apex/EmailAdvancedSearchController.getRelatedEngagements';
 
 const ACTIONS = [
 
@@ -22,7 +22,7 @@ const COLS = [
     { label: 'Subject', fieldName: 'Subject', type: 'text', editable: false, sortable: 'true', initialWidth: 359 },
     { label: 'Content', fieldName: 'Content', type: 'text', editable: false, sortable: false, initialWidth: 349 },
     { label: 'Categories', fieldName: 'Categories', type: 'text', editable: false, sortable: false },
-    { label: 'Sent On', fieldName: 'CreatedDate', type: 'date', editable: false, sortable: 'true', initialWidth: 100 },
+    { label: 'Sent On', fieldName: 'FullCreatedDate', type: 'date', editable: false, sortable: 'true', initialWidth: 100 },
     { type: 'action',
         typeAttributes: { rowActions: ACTIONS },
     },    
@@ -35,7 +35,6 @@ export default class EmailAdvancedSearch extends LightningElement {
 
     @track categories = [
         { label: 'All Categories', value: 'All Categories', isSelected: true },
-        { label: 'Categoria larga 00000000000000000000000000000000000000000000000000000000000000000', value: 'AR/Proposals', isSelected: false },
         { label: 'AR/Proposals', value: 'AR/Proposals', isSelected: false },
         { label: 'Bible', value: 'Bible', isSelected: false },
         { label: 'Board Meeting / Minutes / Notes', value: 'Board Meeting / Minutes / Notes', isSelected: false },
@@ -117,9 +116,9 @@ export default class EmailAdvancedSearch extends LightningElement {
     @track engagements = [{label:'All Engagements', value:'All Engagements', isSelected : false}];;
     @track selectedEngagements = [];
     @track selectedAmountOfEngagements = 'Current Engagement';
-    @track isMouseOver;
-    @track isMouseOver2;
-    @track isMouseOver3;
+    @track isMouseOverBusinessUnits;
+    @track isMouseOverCategories;
+    @track isMouseOverEngagements;
     @track nameOfEngagement;
     @track disableBUFilter;
 
@@ -136,20 +135,20 @@ export default class EmailAdvancedSearch extends LightningElement {
         this.getEngagementsOfMotherAccount(this.currentRecordId);     
     }
 
-    renderedCallback(){
+    renderedCallback() {
         if (!this.isRendered) {
             this.search();  
             this.isRendered = true;
         }         
     }
     
-    handleCategoryChange(event){
+    handleCategoryChange(event) {
         this.selectedCategory = event.detail.value;
     }
 
-    search(event){
-        if(event !== undefined){
-            if (event.currentTarget.dataset.from == 'main-button'){
+    search(event) {
+        if (event !== undefined) {
+            if (event.currentTarget.dataset.from == 'main-button') {
                 this.pageNumber = 1;
             } 
         }
@@ -191,6 +190,8 @@ export default class EmailAdvancedSearch extends LightningElement {
         .then((data) => {
             this.maxRecordsToShow = data;    
             this.setPageNumbers(data);    
+        })
+        .then(() => {            
             this.colorCurrentPageNumber(); 
         })
         .catch(error => {
@@ -200,7 +201,7 @@ export default class EmailAdvancedSearch extends LightningElement {
         });
     }
 
-    getBusinessUnits(engagementId){
+    getBusinessUnits(engagementId) {
         this.isLoading = true;
         getBusinessUnitsOfEngagement({engagementId : engagementId})
         .then((data) => {
@@ -220,8 +221,8 @@ export default class EmailAdvancedSearch extends LightningElement {
         });
     }
 
-    returnLabelValueListBU(data){
-        let auxList = data.map(function(record){
+    returnLabelValueListBU(data) {
+        let auxList = data.map(function(record) {
             let newLabel;
             let newValue = record.Id;
             if (record.Parent_Object_Name__c != null && record.Parent_Object_Name__c != undefined) {
@@ -236,8 +237,8 @@ export default class EmailAdvancedSearch extends LightningElement {
         return auxList;
     }
 
-    getEngagementsOfMotherAccount(engagementId){
-        getSiblingEngagements({engagementId : engagementId})
+    getEngagementsOfMotherAccount(engagementId) {
+        getRelatedEngagements({engagementId : engagementId})
         .then((data) => {
             this.isLoading = false;
             let auxList = this.returnLabelValueListEngagements(data);
@@ -254,9 +255,9 @@ export default class EmailAdvancedSearch extends LightningElement {
     }
 
 
-    returnLabelValueListEngagements(data){
+    returnLabelValueListEngagements(data) {
         let currentEng = this.currentRecordId;
-        let auxList = data.map(function(record){
+        let auxList = data.map(function(record) {
             let newLabel = record.Name + '-' + record.Name__c;
             let newValue = record.Id;
             let isSelected = record.Id == currentEng ? true : false;
@@ -267,7 +268,7 @@ export default class EmailAdvancedSearch extends LightningElement {
         return auxList;
     }
 
-    resetInputs(){
+    resetInputs() {
         let id = this.currentRecordId;
         this.template.querySelector('.input-date-from').value = '';
         this.template.querySelector('.input-date-until').value = '';
@@ -277,30 +278,56 @@ export default class EmailAdvancedSearch extends LightningElement {
         this.selectedAmountOfCategories = 'All Categories';
         this.selectedAmountOfBus = 'All Business Units';
         this.selectedAmountOfEngagements = 'Current Engagement'
+        let selectedCategories = [];
+        let selectedBusinessUnits = [];
+        let selectedEngagements = [];
 
-        this.categories.forEach(function(option){
-            if(option.label == 'All Categories') {
+        this.categories.forEach(function(option) {
+            if (option.label == 'All Categories') {
                 option.isSelected = true;
             } else {
                 option.isSelected = false;
             }
         });
 
-        this.businessUnits.forEach(function(option){
-            if(option.label == 'All Business Units') {
+        this.businessUnits.forEach(function(option) {
+            if (option.label == 'All Business Units') {
                 option.isSelected = true;
             } else {
                 option.isSelected = false;
             }
-        });      
-        
-        this.engagements.forEach(function(option){
-            if(option.value == id) {
+        });     
+
+        this.engagements.forEach(function(option) {
+            if (option.value == id) {
                 option.isSelected = true;
             } else {
                 option.isSelected = false;
             }
         }); 
+        
+        this.businessUnits.forEach(function(option) {
+            if (option.isSelected == true) {
+                selectedBusinessUnits.push(option.value);
+            }
+        });        
+
+        this.categories.forEach(function(option) {
+            if (option.isSelected == true) {
+                selectedCategories.push(option.value);
+            }
+        }); 
+        
+        this.engagements.forEach(function(option) {
+            if (option.isSelected == true) {
+                selectedEngagements.push(option.value);
+            }
+        });
+
+        this.selectedCategory = selectedCategories.join(';');;
+        this.selectedEngagements = selectedEngagements;
+        this.selectedBusinessUnits = selectedBusinessUnits;
+        this.search();
     }    
 
     normalizeFieldsOnData(data) {
@@ -317,10 +344,11 @@ export default class EmailAdvancedSearch extends LightningElement {
             rowData.FullFrom = row.Recipients_From__c;    
             rowData.From = row.Recipients_From__c.includes('!') ? row.Recipients_From__c.split('!')[0] : row.Recipients_From__c;
             rowData.CreatedDate = row.CreatedDate.split('T')[0];
+            rowData.FullCreatedDate = row.CreatedDate;
             rowData.CreatedHour = row.CreatedDate.split('T')[1].split('.')[0];
             rowData.DownloadUrl = '/sfc/servlet.shepherd/version/download/' + row.Id;
             currentData.push(rowData);
-            if(i == 0){
+            if (i == 0) {
                 this.nameOfEngagement = row.Comments__c;
                 i++;
             }
@@ -330,13 +358,28 @@ export default class EmailAdvancedSearch extends LightningElement {
         return currentData;    
     }
 
-    setPageNumbers(maxRecordsToShow) {
-        let totalPages = Math.ceil(maxRecordsToShow / this.entriesAmount);
+    async setPageNumbers(maxRecordsToShow) {
+        let totalPages;
+        if (parseInt(maxRecordsToShow) > 2000) {
+            if (parseInt(this.entriesAmount) === 50) {
+                totalPages = 40
+            } else if (parseInt(this.entriesAmount) === 100) {
+                totalPages = 20
+            } else if (parseInt(this.entriesAmount) === 200) {
+                totalPages = 10
+            } else if (parseInt(this.entriesAmount) === 500) {
+                totalPages = 4;
+            }
+        } else {
+            totalPages = Math.ceil(maxRecordsToShow / this.entriesAmount);
+        }
         this.maxAmountOfPages = totalPages;
         this.listOfPageNumbers = Array.from(Array(totalPages), (_, i) => i + 1);
+        this.colorCurrentPageNumber();
+
     }
 
-    handlePageChange(event){
+    handlePageChange(event) {
         let isPageNumberValid = true;
         let number = event.currentTarget.dataset.number;
         if (number == -1 && this.pageNumber == 1) {
@@ -374,25 +417,25 @@ export default class EmailAdvancedSearch extends LightningElement {
         }
     }
 
-    colorCurrentPageNumber(){
+    colorCurrentPageNumber() {
         this.template.querySelectorAll('.slds-m-left_x-small.pagination-button').forEach((but)=>{
-            if(parseInt(this.pageNumber) === parseInt(but.dataset.number,10)){
-                but.variant = "brand";
+            if (parseInt(this.pageNumber) === parseInt(but.dataset.number,10)) {
+                but.variant = 'brand';
             } else {
-                but.variant = "neutral";
+                but.variant = 'neutral';
             }
         });
     }
 
-    openModal(){
+    openModal() {
         this.showModal = true;        
     }
 
-    closeModal(){
+    closeModal() {
         this.showModal = false;  
     }
 
-    handleEntryAmountChange(event){
+    handleEntryAmountChange(event) {
         this.entriesAmount = event.detail.value;
         this.pageNumber = 1;
         this.search();
@@ -455,37 +498,38 @@ export default class EmailAdvancedSearch extends LightningElement {
 
     //Multi-select picklist methods for Business Units
 
-    get mainDivClassAttr() {
-        return (this.isMouseOver) ? 'slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click slds-is-open' :
-                                    'slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click';
+    get mainDivClassAttrBusinessUnits() {
+        return (this.isMouseOverBusinessUnits) ? 'slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click slds-is-open' :
+                                                'slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click';
     }
 
-    handleMouseEnter() {
-        this.isMouseOver = true;
+    handleMouseEnterBusinessUnits() {
+        this.isMouseOverBusinessUnits = true;
     }
 
-    handleMouseLeave() {
-        this.isMouseOver = false;
+    handleMouseLeaveBusinessUnits() {
+        this.isMouseOverBusinessUnits = false;
     }
 
-    handleSelection(event) {
+    handleSelectionBusinessUnits(event) {
         let tickedOptions = 0;
         let selectedOptions = [];
         const selectedId = event.currentTarget.dataset.id;
         const checkedOrUnchecked = event.target.checked;
 
-        if(selectedId == 'All Business Units'){
-            this.businessUnits.forEach(function(option){
+
+        if (selectedId == 'All Business Units') {
+            this.businessUnits.forEach(function(option) {
                 option.isSelected = false;
             });
         } else {
-            this.businessUnits.forEach(function(option){
-                if(option.value === selectedId) {
+            this.businessUnits.forEach(function(option) {
+                if (option.value === selectedId) {
                     option.isSelected = checkedOrUnchecked;
                 }
             });
-            this.businessUnits.forEach(function(option){
-                if(option.isSelected && option.label != 'All Business Units') {
+            this.businessUnits.forEach(function(option) {
+                if (option.isSelected && option.label != 'All Business Units') {
                     tickedOptions += 1;
                 }
             });
@@ -495,21 +539,21 @@ export default class EmailAdvancedSearch extends LightningElement {
 
         if (tickedOptions === 0) {
             this.selectedAmountOfBus = 'All Business Units';
-            this.businessUnits.forEach(function(option){
-                if(option.value == 'All Business Units') {
+            this.businessUnits.forEach(function(option) {
+                if (option.value == 'All Business Units') {
                     option.isSelected = true;
                 }
             });
         } else {
-            this.businessUnits.forEach(function(option){
-                if(option.value == 'All Business Units') {
+            this.businessUnits.forEach(function(option) {
+                if (option.value == 'All Business Units') {
                     option.isSelected = false;
                 }
             });
         }
 
-        this.businessUnits.forEach(function(option){
-            if(option.isSelected == true) {
+        this.businessUnits.forEach(function(option) {
+            if (option.isSelected == true) {
                 selectedOptions.push(option.value);
             }
         });
@@ -519,37 +563,37 @@ export default class EmailAdvancedSearch extends LightningElement {
 
     //Multi-select picklist methods for Categories
 
-    get mainDivClassAttr2() {
-        return (this.isMouseOver2) ? 'slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click slds-is-open' :
-                                    'slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click';
+    get mainDivClassAttrCategories() {
+        return (this.isMouseOverCategories) ? 'slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click slds-is-open' :
+                                              'slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click';
     }
 
-    handleMouseEnter2() {
-        this.isMouseOver2 = true;
+    handleMouseEnterCategories() {
+        this.isMouseOverCategories = true;
     }
 
-    handleMouseLeave2() {
-        this.isMouseOver2 = false;
+    handleMouseLeaveCategories() {
+        this.isMouseOverCategories = false;
     }
 
-    handleSelectionCategory(event) {
+    handleSelectionCategories(event) {
         let tickedOptions = 0;
         let selectedOptions = [];
         const selectedId = event.currentTarget.dataset.id;
         const checkedOrUnchecked = event.target.checked;
 
-        if(selectedId == 'All Categories'){
-            this.categories.forEach(function(option){
+        if (selectedId == 'All Categories') {
+            this.categories.forEach(function(option) {
                 option.isSelected = false;
             });
         } else {
-            this.categories.forEach(function(option){
-                if(option.value === selectedId) {
+            this.categories.forEach(function(option) {
+                if (option.value === selectedId) {
                     option.isSelected = checkedOrUnchecked;
                 }
             });
-            this.categories.forEach(function(option){
-                if(option.isSelected && option.label != 'All Categories') {
+            this.categories.forEach(function(option) {
+                if (option.isSelected && option.label != 'All Categories') {
                     tickedOptions += 1;
                 }
             });
@@ -559,21 +603,21 @@ export default class EmailAdvancedSearch extends LightningElement {
 
         if (tickedOptions === 0) {
             this.selectedAmountOfCategories = 'All Categories';
-            this.categories.forEach(function(option){
-                if(option.value == 'All Categories') {
+            this.categories.forEach(function(option) {
+                if (option.value == 'All Categories') {
                     option.isSelected = true;
                 }
             });
         } else {
-            this.categories.forEach(function(option){
-                if(option.value == 'All Categories') {
+            this.categories.forEach(function(option) {
+                if (option.value == 'All Categories') {
                     option.isSelected = false;
                 }
             });
         }
 
-        this.categories.forEach(function(option){
-            if(option.isSelected == true) {
+        this.categories.forEach(function(option) {
+            if (option.isSelected == true) {
                 selectedOptions.push(option.value);
             }
         });
@@ -581,40 +625,40 @@ export default class EmailAdvancedSearch extends LightningElement {
         this.selectedCategory = selectedOptions.join(';');
     }
 
-    // Multi-select picklist methods for Engagements
+    //Multi-select picklist methods for Engagements
 
-    get mainDivClassAttr3() {
-        return (this.isMouseOver3) ? 'slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click slds-is-open' :
-                                    'slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click';
+    get mainDivClassAttrEngagements() {
+        return (this.isMouseOverEngagements) ? 'slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click slds-is-open' :
+                                               'slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click';
     }
 
-    handleMouseEnter3() {
-        this.isMouseOver3 = true;
+    handleMouseEnterEngagements() {
+        this.isMouseOverEngagements = true;
     }
 
-    handleMouseLeave3() {
-        this.isMouseOver3 = false;
+    handleMouseLeaveEngagements() {
+        this.isMouseOverEngagements = false;
     }
 
-    handleSelectionEgagement(event) {
+    handleSelectionEgagements(event) {
         let tickedOptions = 0;
         let selectedOptions = [];
         let engId = this.currentRecordId;
         const selectedId = event.currentTarget.dataset.id;
         const checkedOrUnchecked = event.target.checked;
 
-        if(selectedId == 'All Engagements'){
-            this.engagements.forEach(function(option){
+        if (selectedId == 'All Engagements') {
+            this.engagements.forEach(function(option) {
                 option.isSelected = false;
             });
         } else {
-            this.engagements.forEach(function(option){
-                if(option.value === selectedId) {
+            this.engagements.forEach(function(option) {
+                if (option.value === selectedId) {
                     option.isSelected = checkedOrUnchecked;
                 }
             });
-            this.engagements.forEach(function(option){
-                if(option.isSelected && option.label != 'All Engagements') {
+            this.engagements.forEach(function(option) {
+                if (option.isSelected && option.label != 'All Engagements') {
                     tickedOptions += 1;
                 }
             });
@@ -624,14 +668,14 @@ export default class EmailAdvancedSearch extends LightningElement {
 
         if (tickedOptions === 0) {
             this.selectedAmountOfEngagements = 'All Engagements';
-            this.engagements.forEach(function(option){
-                if(option.value == 'All Engagements') {
+            this.engagements.forEach(function(option) {
+                if (option.value == 'All Engagements') {
                     option.isSelected = true;
                 }
             });
         } else {
-            this.engagements.forEach(function(option){
-                if(option.value == 'All Engagements') {
+            this.engagements.forEach(function(option) {
+                if (option.value == 'All Engagements') {
                     option.isSelected = false;
                 }
             });
@@ -639,9 +683,9 @@ export default class EmailAdvancedSearch extends LightningElement {
         
         let changeText = false;
         let disableBuFilter = true;
-        if(this.selectedAmountOfEngagements === 1){
-            this.engagements.forEach(function(option){
-                if(option.value ==  engId && option.isSelected ==  true) {
+        if (this.selectedAmountOfEngagements === 1) {
+            this.engagements.forEach(function(option) {
+                if (option.value ==  engId && option.isSelected ==  true) {
                     changeText = true;
                     disableBuFilter = false;
                 }
@@ -649,16 +693,16 @@ export default class EmailAdvancedSearch extends LightningElement {
         }
         
         this.setBuFilterAsDisabled(disableBuFilter);
-        if(changeText){
+        if (changeText) {
             this.selectedAmountOfEngagements = 'Current Engagement';
         }
 
-        this.engagements.forEach(function(option){
-            if(tickedOptions === 0){
-                if(!(option.value === 'All Engagements')){
+        this.engagements.forEach(function(option) {
+            if (tickedOptions === 0) {
+                if (!(option.value === 'All Engagements')) {
                     selectedOptions.push(option.value);
                 }
-            }else if(option.isSelected == true){
+            }else if (option.isSelected == true) {
                 selectedOptions.push(option.value);
             }
         });
@@ -666,8 +710,8 @@ export default class EmailAdvancedSearch extends LightningElement {
         this.selectedEngagements = selectedOptions;
     }
 
-    setBuFilterAsDisabled(yes){
-        if(yes){
+    setBuFilterAsDisabled(yes) {
+        if (yes) {
             this.template.querySelector('.bu-filter').className = 'slds-button slds-button--neutral slds-picklist__label multi-select-picklist-button bu-filter disabled-button';
             this.selectedAmountOfBus = 'All Business Units';
         } else {
@@ -675,24 +719,24 @@ export default class EmailAdvancedSearch extends LightningElement {
         }
     }
 
-    //Finish methods for pisklist.
+    //End methods for pisklists.
 
-    returnToStandardView(){
+    returnToStandardView() {
         const hideAdvancedSearchEvent = new CustomEvent("hideadvancedsearch", {});
         this.dispatchEvent(hideAdvancedSearchEvent);
     }
 
-    getTodayDate(){
+    getTodayDate() {
         let today = new Date();
         let dd = String(today.getDate()).padStart(2, '0');
         let mm = String(today.getMonth() + 1).padStart(2, '0');
         let yyyy = today.getFullYear();
-        let todaySrt =  yyyy + '-' + mm + '-' + dd; 
+        let todayStr =  yyyy + '-' + mm + '-' + dd; 
 
-        return todaySrt;
+        return todayStr;
     }
 
-    getTomorrowDate(){
+    getTomorrowDate() {
         Date.prototype.addDays = function(days) {
             var date = new Date(this.valueOf());
             date.setDate(date.getDate() + days);
